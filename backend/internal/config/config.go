@@ -9,13 +9,14 @@ type Config struct {
 type configDB struct {
 	DBhost     string `toml:"host"`
 	DBuser     string `toml:"user"`
-	DBpassword string `toml:"passwor"`
+	DBpassword string `toml:"password"`
 	DBname     string `toml:"name"`
 	DBport     int64  `toml:"port"`
 }
 
 type configSRV struct {
-	Port int64 `toml:"port"`
+	Port      int64  `toml:"port"`
+	SecretJws string `toml:"secret_jws"`
 }
 
 type configS3 struct {
