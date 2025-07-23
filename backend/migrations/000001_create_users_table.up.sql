@@ -24,26 +24,26 @@ CREATE TABLE job_title (
 
 -- Step 5: User table
 CREATE TABLE "user" (
-    -- user_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    -- first_name VARCHAR(255),
-    -- last_name VARCHAR(255),
+    user_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
     email VARCHAR(255) UNIQUE NOT NULL,
     phone_number VARCHAR(255),
     -- role UUID REFERENCES job_title(job_title_id),
-    -- is_admin BOOLEAN DEFAULT FALSE,
+    is_admin BOOLEAN DEFAULT FALSE,
     password_hash TEXT
 );
 
 -- Step 6: Admin table
 CREATE TABLE admin (
-    admin_id UUID PRIMARY KEY DEFAULT uuid_generate_v4()
-    -- user_id UUID UNIQUE REFERENCES "user"(user_id) ON DELETE CASCADE
+    admin_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID UNIQUE REFERENCES "user"(user_id) ON DELETE CASCADE
 );
 
 -- Step 7: Task table
 CREATE TABLE task (
     task_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    -- author_id UUID REFERENCES "user"(user_id) ON DELETE SET NULL,
+    author_id UUID REFERENCES "user"(user_id) ON DELETE SET NULL,
     header VARCHAR(255),
     body TEXT,
     start_deadline TIMESTAMP,

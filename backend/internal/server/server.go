@@ -34,6 +34,7 @@ func NewServer(cnf config.Config) (*Server, error) {
 
 func (s *Server) Init() {
 	s.mux.HandleFunc("POST /register", s.authHandler.RegisterUser())
+	s.mux.HandleFunc("POST /login", s.authHandler.Login())
 }
 
 func (s *Server) Run() error {

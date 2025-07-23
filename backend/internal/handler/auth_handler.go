@@ -39,3 +39,29 @@ func (a *Auth) RegisterUser() http.HandlerFunc {
 		util.ResponseJSON(w, http.StatusOK, res)
 	}
 }
+
+func (a *Auth) Login() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		login := model.LoginRequest{}
+
+		if err := json.NewDecoder(r.Body).Decode(&login); err != nil {
+			http.Error(w, "json encoding problem", http.StatusBadRequest)
+			slog.Warn("cannot read json", "error", err)
+			return
+		}
+
+		res, err := a.authService.Login(login)
+
+		if err != nil {
+			if err == service.ErrEmailOrPassword {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+			} else {
+				http.Error(w, "internal error", http.StatusInternalServerError)
+			}
+			return
+		}
+
+		util.ResponseJSON(w, http.StatusOK, res)
+
+	}
+}
