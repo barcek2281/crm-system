@@ -33,6 +33,8 @@ func NewServer(cnf config.Config) (*Server, error) {
 }
 
 func (s *Server) Init() {
+	// TODO: add middleware
+	// only admin can create user
 	s.mux.HandleFunc("POST /register", s.authHandler.RegisterUser())
 	s.mux.HandleFunc("POST /login", s.authHandler.Login())
 }
