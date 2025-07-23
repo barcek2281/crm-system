@@ -20,7 +20,7 @@ var (
 	ErrPasswordSmall   = errors.New("password is less than 8 symbols")
 	ErrInvalidEmail    = errors.New("invalid email")
 	ErrInternal        = errors.New("internal problem")
-	ErrEmailOrPassword = errors.New("email or password is not correct")
+	ErrEmailOrPassword = errors.New("login or password is not correct")
 )
 
 type Auth struct {
@@ -83,8 +83,9 @@ func (a *Auth) Login(user model.LoginRequest) (model.LoginResponse, error) {
 		return model.LoginResponse{}, ErrInternal
 	}
 
-	user2, err := a.authRepo.Get(user.Email)
+	user2, err := a.authRepo.Get(user.Login)
 	if err != nil {
+		slog.Info("error to get login", "error", err)
 		return model.LoginResponse{}, ErrInternal
 	}
 

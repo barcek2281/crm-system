@@ -27,11 +27,12 @@ CREATE TABLE "user" (
     user_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     first_name VARCHAR(255),
     last_name VARCHAR(255),
-    email VARCHAR(255) UNIQUE NOT NULL,
-    phone_number VARCHAR(255),
+    -- email VARCHAR(255) UNIQUE NOT NULL,
+    -- phone_number VARCHAR(255),
     -- role UUID REFERENCES job_title(job_title_id),
     is_admin BOOLEAN DEFAULT FALSE,
     password_hash TEXT
+    "login" TEXT UNIQUE NOT NULL,
 );
 
 -- Step 6: Admin table
