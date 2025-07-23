@@ -2,8 +2,9 @@ package main
 
 import (
 	"crmsystem/internal/config"
-	"fmt"
+	"crmsystem/internal/server"
 	"log"
+	"log/slog"
 	"os"
 
 	"github.com/BurntSushi/toml"
@@ -20,5 +21,13 @@ func main() {
 		log.Fatalf("error with toml file: %v", err)
 	}
 
-	fmt.Printf("%+v", cnf)
+	s, err := server.NewServer(cnf)
+	if err != nil {
+		log.Fatalf("cannot init server: %v", err)
+	}
+	
+	slog.Info("server listing", "port", cnf.Srv.Port)
+	if err := s.Run(); err != nil {
+		slog.Error("server problem", "error", err)
+	}
 }

@@ -28,10 +28,9 @@ CREATE TABLE "user" (
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     email VARCHAR(255) UNIQUE NOT NULL,
-    phone_number VARCHAR(127),
-    role UUID REFERENCES job_title(job_title_id),
+    phone_number VARCHAR(255),
+    -- role UUID REFERENCES job_title(job_title_id),
     is_admin BOOLEAN DEFAULT FALSE,
-    session TEXT,
     password_hash TEXT
 );
 
