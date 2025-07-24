@@ -30,15 +30,8 @@ CREATE TABLE "user" (
     job_id UUID REFERENCES job_title(job_title_id),
     company_id UUID REFERENCES company(company_id),
     is_admin BOOLEAN DEFAULT FALSE,
-    session TEXT,
     password_hash TEXT,
     login VARCHAR(255) UNIQUE NOT NULL
-);
-
--- Admin table
-CREATE TABLE admin (
-    admin_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID UNIQUE REFERENCES "user"(user_id) ON DELETE CASCADE
 );
 
 -- Task table

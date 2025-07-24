@@ -4,12 +4,12 @@ type User struct {
 	ID        string `json:"user_id"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
-	// Email       string `json:"email"`
-	// PhoneNumber string `json:"phone_number"`
-	Role     string `json:"role"`
-	Company  string `json:"company"`
-	Password string `json:"password"` // lol.
-	IsAdmin  bool   `json:"is_admin,omitempty"`
+
+	Job      Job     `json:"job"`
+	Company  Company `json:"company"`
+	Password string  `json:"password"` // lol.
+	IsAdmin  bool    `json:"is_admin,omitempty"`
+	Login    string  `json:"login"`
 }
 
 type LoginRequest struct {
@@ -21,15 +21,17 @@ type LoginResponse struct {
 	SessionToken string `json:"sessionToken"`
 }
 type RegisterRequest struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Role      string `json:"role"`
-	// Email       string `json:"email" validate:"required,email"`
-	// PhoneNumber string `json:"phoneNumber" validate:"required"`
+	FirstName string  `json:"first_name"`
+	LastName  string  `json:"last_name"`
+	Job       Job     `json:"job"`
+	Company   Company `json:"company"`
+
 	Password string `json:"password" validate:"required,min=8"`
-	Login    string `json:"passoword" validate:"required,min=4"`
+	IsAdmin  bool   `json:"is_admin"`
+	Login    string `json:"login"`
 }
 type RegisterResponse struct {
 	ID           string `json:"user_id"`
+	Login        string `json:"login"`
 	SessionToken string `json:"sessionToken"`
 }

@@ -8,6 +8,8 @@ import (
 	"database/sql"
 	"errors"
 	"log/slog"
+	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -48,6 +50,12 @@ func (a *Auth) Register(user model.RegisterRequest) (model.RegisterResponse, err
 	}
 
 	user.Password = string(passHashed)
+
+	// bruh i hate this job
+	user.Login = user.FirstName + strconv.Itoa(rand.Intn(1000))
+
+	// TODO: find company name and job title
+
 	id, err := a.authRepo.Register(user)
 	if err != nil {
 		slog.Warn("eror with db", "erro", err)
@@ -56,9 +64,9 @@ func (a *Auth) Register(user model.RegisterRequest) (model.RegisterResponse, err
 
 	token, err := util.CreateJWTsession([]byte(a.cnf.Srv.SecretJws),
 		jwt.MapClaims{
-			"id":   id,
-			"role": user.Role,
-			"exp":  time.Now().Add(time.Hour * 24 * 7).Unix(),
+			"user_id":  id,
+			"is_admin": user.IsAdmin,
+			"exp":      time.Now().Add(time.Hour * 24 * 7).Unix(),
 		})
 	if err != nil {
 		slog.Warn("cannot create session", "error", err)
@@ -66,6 +74,7 @@ func (a *Auth) Register(user model.RegisterRequest) (model.RegisterResponse, err
 	}
 
 	res := model.RegisterResponse{
+		Login:        user.FirstName + id[:5],
 		ID:           id,
 		SessionToken: token,
 	}
@@ -83,7 +92,7 @@ func (a *Auth) Login(user model.LoginRequest) (model.LoginResponse, error) {
 		return model.LoginResponse{}, ErrInternal
 	}
 
-	user2, err := a.authRepo.Get(user.Login)
+	user2, err := a.authRepo.GetByLogin(user.Login)
 	if err != nil {
 		slog.Info("error to get login", "error", err)
 		return model.LoginResponse{}, ErrInternal
@@ -95,13 +104,22 @@ func (a *Auth) Login(user model.LoginRequest) (model.LoginResponse, error) {
 
 	token, err := util.CreateJWTsession([]byte(a.cnf.Srv.SecretJws),
 		jwt.MapClaims{
-			"id":   user2.ID,
-			"role": user2.Role,
-			"exp":  time.Now().Add(time.Hour * 24 * 7).Unix(),
+			"user_id":  user2.ID,
+			"is_admin": user2.IsAdmin,
+			"exp":      time.Now().Add(time.Hour * 24 * 7).Unix(),
 		})
 	if err != nil {
 		slog.Warn("cannot create session", "error", err)
 		return model.LoginResponse{}, ErrInternal
 	}
 	return model.LoginResponse{SessionToken: token, ID: user2.ID}, nil
+}
+
+func (a *Auth) IsAdmin(userId string) (bool, error) {
+	user, err := a.authRepo.GetById(userId)
+	if err != nil {
+		return false, err
+	}
+
+	return user.IsAdmin, nil
 }
