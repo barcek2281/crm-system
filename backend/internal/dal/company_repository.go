@@ -20,7 +20,7 @@ func (j *CompanyRepo) FindCompanyByName(name string) (model.Company, error) {
 	return company, nil
 }
 
-func (j *CompanyRepo) CreateJob(company model.Company) (string, error) {
+func (j *CompanyRepo) CreateCompany(company model.Company) (string, error) {
 	q := `INSERT INTO job_title (name, description) VALUES ($1, $2) RETURNING job_title_id`
 	if err := j.db.QueryRow(q, company.Name, company.Description).Scan(&company.Id); err != nil {
 		return "", err
