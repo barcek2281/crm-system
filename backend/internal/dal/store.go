@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log/slog"
+
 	_ "github.com/lib/pq"
 )
 
@@ -13,8 +14,10 @@ const (
 )
 
 type Store struct {
-	db   *sql.DB
-	user *User
+	db      *sql.DB
+	user    *User
+	job     *JobRepo
+	company *CompanyRepo
 }
 
 func NewStore(cnf config.Config) (*Store, error) {
@@ -48,4 +51,21 @@ func (s *Store) User() *User {
 		}
 	}
 	return s.user
+}
+func (s *Store) Job() *JobRepo {
+	if s.job == nil {
+		s.job = &JobRepo{
+			db: s.db,
+		}
+	}
+	return s.job
+}
+
+func (s *Store) Company() *CompanyRepo {
+	if s.company == nil {
+		s.company = &CompanyRepo{
+			db: s.db,
+		}
+	}
+	return s.company
 }

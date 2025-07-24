@@ -10,9 +10,11 @@ import (
 )
 
 type Server struct {
-	authHandler *handler.Auth
-	cnf         config.Config
-	mux         *http.ServeMux
+	authHandler    *handler.Auth
+	jobHandler     *handler.Job
+	companyHandler *handler.Company
+	cnf            config.Config
+	mux            *http.ServeMux
 }
 
 func NewServer(cnf config.Config) (*Server, error) {
@@ -22,19 +24,29 @@ func NewServer(cnf config.Config) (*Server, error) {
 	}
 
 	userRepo := store.User()
+	jobRepo := store.Job()
+	comRepo := store.Company()
 
 	authService := service.NewAuthService(userRepo, cnf)
+	jobService := service.NewJobService(jobRepo)
+	companyService := service.NewCompanyService(comRepo)
+
 	authHandler := handler.NewAuthHandler(authService)
+	jobHandler := handler.NewJobHandler(jobService)
+	company := handler.NewCompanyHandler(companyService)
+
 	return &Server{
-		authHandler: authHandler,
-		cnf:         cnf,
-		mux:         http.NewServeMux(),
+		companyHandler: company,
+		jobHandler:     jobHandler,
+		authHandler:    authHandler,
+		cnf:            cnf,
+		mux:            http.NewServeMux(),
 	}, nil
 }
 
 func (s *Server) Init() {
-	// TODO: add middleware
-	// only admin can create user
+	s.mux.HandleFunc("POST /create/company", s.jobHandler.CreateJob())
+	s.mux.HandleFunc("POST /create/job", s.jobHandler.CreateJob())
 	s.mux.HandleFunc("POST /register", s.authHandler.RegisterUser())
 	s.mux.HandleFunc("POST /login", s.authHandler.Login())
 }
